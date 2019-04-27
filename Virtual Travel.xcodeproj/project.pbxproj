@@ -12,6 +12,8 @@
 		5298C0A322749E0300344BE6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5298C0A122749E0300344BE6 /* Main.storyboard */; };
 		5298C0A522749E0400344BE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5298C0A422749E0400344BE6 /* Assets.xcassets */; };
 		5298C0A822749E0400344BE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5298C0A622749E0400344BE6 /* LaunchScreen.storyboard */; };
+		5298C0B22274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5298C0B02274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld */; };
+		5298C0B52274FA0600344BE6 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298C0B42274FA0600344BE6 /* PhotoAlbumViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		5298C0A422749E0400344BE6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5298C0A722749E0400344BE6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5298C0A922749E0400344BE6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5298C0B12274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTravelCoreData.xcdatamodel; sourceTree = "<group>"; };
+		5298C0B42274FA0600344BE6 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +58,32 @@
 		5298C09C22749E0300344BE6 /* Virtual Travel */ = {
 			isa = PBXGroup;
 			children = (
+				5298C0B32274F9E200344BE6 /* ViewController */,
+				5298C0AF2274CC6D00344BE6 /* Model */,
 				5298C09D22749E0300344BE6 /* AppDelegate.swift */,
-				5298C09F22749E0300344BE6 /* TravelLocationsViewController.swift */,
 				5298C0A122749E0300344BE6 /* Main.storyboard */,
 				5298C0A422749E0400344BE6 /* Assets.xcassets */,
 				5298C0A622749E0400344BE6 /* LaunchScreen.storyboard */,
 				5298C0A922749E0400344BE6 /* Info.plist */,
 			);
 			path = "Virtual Travel";
+			sourceTree = "<group>";
+		};
+		5298C0AF2274CC6D00344BE6 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5298C0B02274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5298C0B32274F9E200344BE6 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				5298C09F22749E0300344BE6 /* TravelLocationsViewController.swift */,
+				5298C0B42274FA0600344BE6 /* PhotoAlbumViewController.swift */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +157,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5298C0B22274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld in Sources */,
 				5298C0A022749E0300344BE6 /* TravelLocationsViewController.swift in Sources */,
 				5298C09E22749E0300344BE6 /* AppDelegate.swift in Sources */,
+				5298C0B52274FA0600344BE6 /* PhotoAlbumViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +360,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5298C0B02274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5298C0B12274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodel */,
+			);
+			currentVersion = 5298C0B12274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodel */;
+			path = VirtualTravelCoreData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5298C09222749E0300344BE6 /* Project object */;
 }
