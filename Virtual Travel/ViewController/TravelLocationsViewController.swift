@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class TravelLocationsViewController: UIViewController {
     
@@ -15,8 +16,10 @@ class TravelLocationsViewController: UIViewController {
     @IBOutlet weak var deletePinsNotification: UIButton!
     
     var locations = [CLLocation]()
-    var pins = [MKPointAnnotation]()
+    var pins = [MKAnnotation]()
     var shouldDeletePins = false
+    
+    var pinsDB: [Pin] = []
     
     var dataController: DataController!
     
@@ -25,6 +28,7 @@ class TravelLocationsViewController: UIViewController {
         self.title = "Virtual Travel"
         setUpNavigation()
         addLongPressAction()
+        fetchPins()
         
         mapView.delegate = self
     }
@@ -73,6 +77,17 @@ class TravelLocationsViewController: UIViewController {
         }
     }
     
+    func fetchPins() {
+        let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
+        if let result = try? dataController.viewContext.fetch(fetchRequest) {
+            pinsDB = result
+            self.mapView.removeAnnotations(pins)
+        }
+    }
+}
+
+extension TravelLocationsViewController: MKMapViewDelegate {
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "photoSegue" {
             let photoViewController = segue.destination as! PhotoAlbumViewController
@@ -80,9 +95,7 @@ class TravelLocationsViewController: UIViewController {
             photoViewController.annotationView = annotationView
         }
     }
-}
-
-extension TravelLocationsViewController: MKMapViewDelegate {
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if !shouldDeletePins {
             performSegue(withIdentifier: "photoSegue", sender: view)
@@ -92,5 +105,18 @@ extension TravelLocationsViewController: MKMapViewDelegate {
             }
         }
         mapView.deselectAnnotation(view.annotation, animated: false)
+    }
+    
+    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
+        for pinDB in pinsDB {
+            let point = CGPoint(x: pinDB.latitude, y: pinDB.longitude)
+            let coordinates = mapView.convert(point, toCoordinateFrom: mapView)
+            
+            let pin = MKPointAnnotation()
+            pin.coordinate = coordinates
+            pins.append(pin)
+            
+            mapView.addAnnotation(pin)
+        }
     }
 }
