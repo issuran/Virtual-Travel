@@ -12,8 +12,11 @@ import MapKit
 class TravelLocationsViewController: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var deletePinsNotification: UIButton!
+    
     var locations = [CLLocation]()
     var pins = [MKPointAnnotation]()
+    var shouldDeletePins = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,28 +34,41 @@ class TravelLocationsViewController: UIViewController {
     
     @objc
     func editAction() {
-        print("Edit map")
+        UIView .transition(with: deletePinsNotification,
+                           duration: 0.4,
+                           options: .transitionFlipFromBottom,
+                           animations: {
+                            self.deletePinsNotification.isHidden = self.shouldDeletePins
+                            self.shouldDeletePins = !self.shouldDeletePins
+        },
+                           completion: nil)
     }
     
     func addLongPressAction() {
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(addPinInLocation(longGesture:)))
-        longPress.minimumPressDuration = 1.0
-        
-        mapView.addGestureRecognizer(longPress)
+        if !shouldDeletePins {
+            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(addPinInLocation(longGesture:)))
+            longPress.minimumPressDuration = 0.5
+            
+            mapView.addGestureRecognizer(longPress)
+        }
     }
     
     @objc
     func addPinInLocation(longGesture: UIGestureRecognizer) {
-        let point = longGesture.location(in: mapView)
-        let coordinates = mapView.convert(point, toCoordinateFrom: mapView)
-        let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-        locations.append(location)
-        
-        let pin = MKPointAnnotation()
-        pin.coordinate = coordinates
-        pins.append(pin)
-        
-        mapView.addAnnotation(pin)
+        if !shouldDeletePins {
+            if longGesture.state == .ended {
+                let point = longGesture.location(in: mapView)
+                let coordinates = mapView.convert(point, toCoordinateFrom: mapView)
+                let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+                locations.append(location)
+                
+                let pin = MKPointAnnotation()
+                pin.coordinate = coordinates
+                pins.append(pin)
+                
+                mapView.addAnnotation(pin)
+            }
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -66,6 +82,13 @@ class TravelLocationsViewController: UIViewController {
 
 extension TravelLocationsViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        performSegue(withIdentifier: "photoSegue", sender: view)
+        if !shouldDeletePins {
+            performSegue(withIdentifier: "photoSegue", sender: view)
+        } else {
+            if let annotation = view.annotation {
+                mapView.removeAnnotation(annotation)
+            }
+        }
+        mapView.deselectAnnotation(view.annotation, animated: false)
     }
 }
