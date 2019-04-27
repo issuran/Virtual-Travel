@@ -18,6 +18,8 @@ class TravelLocationsViewController: UIViewController {
     var pins = [MKPointAnnotation]()
     var shouldDeletePins = false
     
+    var dataController: DataController!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Virtual Travel"

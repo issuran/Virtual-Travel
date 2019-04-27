@@ -14,6 +14,7 @@
 		5298C0A822749E0400344BE6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5298C0A622749E0400344BE6 /* LaunchScreen.storyboard */; };
 		5298C0B22274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5298C0B02274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld */; };
 		5298C0B52274FA0600344BE6 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298C0B42274FA0600344BE6 /* PhotoAlbumViewController.swift */; };
+		5298C0B722751B0800344BE6 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298C0B622751B0800344BE6 /* DataController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		5298C0A922749E0400344BE6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5298C0B12274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTravelCoreData.xcdatamodel; sourceTree = "<group>"; };
 		5298C0B42274FA0600344BE6 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
+		5298C0B622751B0800344BE6 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				5298C0B02274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld */,
+				5298C0B622751B0800344BE6 /* DataController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -157,6 +160,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5298C0B722751B0800344BE6 /* DataController.swift in Sources */,
 				5298C0B22274CCF500344BE6 /* VirtualTravelCoreData.xcdatamodeld in Sources */,
 				5298C0A022749E0300344BE6 /* TravelLocationsViewController.swift in Sources */,
 				5298C09E22749E0300344BE6 /* AppDelegate.swift in Sources */,

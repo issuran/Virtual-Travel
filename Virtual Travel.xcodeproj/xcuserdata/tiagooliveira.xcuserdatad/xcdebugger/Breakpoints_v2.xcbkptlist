@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Virtual Travel/ViewController/TravelLocationsViewController.swift"
-            timestampString = "578098681.228251"
+            timestampString = "578100652.082765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
             landmarkName = "editAction()"
             landmarkType = "7">
          </BreakpointContent>
