@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import MapKit
 
-class PhotoAlbumViewController: UIViewController {
+class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -18,7 +18,7 @@ class PhotoAlbumViewController: UIViewController {
     @IBOutlet weak var requestOrDeletePhotoButton: UIButton!
     
     var requestPhoto: Bool = true
-    
+    var itemsToDelete: [Int] = []
     var annotation: MKAnnotation!
     
     fileprivate func setUpFlowLayout() {
@@ -48,15 +48,30 @@ class PhotoAlbumViewController: UIViewController {
         mapView.addAnnotation(pin)
     }
     
+    fileprivate func setUpActionButton() {
+        if requestPhoto {
+            requestOrDeletePhotoButton.setTitle("New Collection", for: .normal)
+        } else {
+            requestOrDeletePhotoButton.setTitle("Remove Selected Pictures", for: .normal)
+        }
+    }
+    
+    func removeSelection(_ indexPath: IndexPath) {
+        let indexToDelete = itemsToDelete.index(of: indexPath.row)
+        itemsToDelete.remove(at: indexToDelete ?? 0)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.allowsMultipleSelection = true
         mapView.delegate = self
         
         // Setup
         setUpFlowLayout()
         setUpMapViewPin()
+        setUpActionButton()
     }
     
     @IBAction func requestOrDeletePhoto(_ sender: Any) {
@@ -66,11 +81,6 @@ class PhotoAlbumViewController: UIViewController {
             // Delete selected photos
         }
     }
-    
-}
-
-extension PhotoAlbumViewController: MKMapViewDelegate {
-    
 }
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -82,5 +92,20 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCollectionViewCell
         cell.imageView.image = #imageLiteral(resourceName: "udaLogo")
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        if let selectedItems = collectionView.indexPathsForSelectedItems {
+            if selectedItems.contains(indexPath) {
+                collectionView.deselectItem(at: indexPath, animated: true)
+                removeSelection(indexPath)
+                return false
+            }
+        }
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        itemsToDelete.append(indexPath.row)
     }
 }
