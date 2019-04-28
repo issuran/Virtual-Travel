@@ -108,6 +108,7 @@ class TravelLocationsViewController: UIViewController {
         let pinDB = Pin(context: dataController.viewContext)
         pinDB.latitude = coordinates.latitude
         pinDB.longitude = coordinates.longitude
+        pinsDB.append(pinDB)
         
         persistToDataBase()
     }
