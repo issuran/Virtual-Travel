@@ -129,7 +129,9 @@ extension TravelLocationsViewController: MKMapViewDelegate {
         if segue.identifier == "photoSegue" {
             let photoViewController = segue.destination as! PhotoAlbumViewController
             let annotationView = sender as! MKAnnotationView
-            photoViewController.annotationView = annotationView
+            if let annotation = annotationView.annotation {
+                photoViewController.annotation = annotation
+            }
         }
     }
     
