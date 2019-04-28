@@ -71,7 +71,7 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Dpq-Fa-EfB">
-                                <rect key="frame" x="0.0" y="192" width="375" height="475"/>
+                                <rect key="frame" x="0.0" y="192" width="375" height="425"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="m9f-wU-TkA">
                                     <size key="itemSize" width="140" height="140"/>
@@ -133,7 +133,7 @@
                             <constraint firstItem="1xv-Cs-zmJ" firstAttribute="trailing" secondItem="Dpq-Fa-EfB" secondAttribute="trailing" id="UKe-0I-T3Q"/>
                             <constraint firstItem="1xv-Cs-zmJ" firstAttribute="bottom" secondItem="7J5-I3-9I4" secondAttribute="bottom" id="YZa-tP-nGB"/>
                             <constraint firstItem="Dpq-Fa-EfB" firstAttribute="leading" secondItem="1xv-Cs-zmJ" secondAttribute="leading" id="YtN-aQ-4Id"/>
-                            <constraint firstItem="1xv-Cs-zmJ" firstAttribute="bottom" secondItem="Dpq-Fa-EfB" secondAttribute="bottom" id="ftR-xE-CKB"/>
+                            <constraint firstItem="7J5-I3-9I4" firstAttribute="top" secondItem="Dpq-Fa-EfB" secondAttribute="bottom" id="ftR-xE-CKB"/>
                             <constraint firstItem="EAC-Rp-1Bq" firstAttribute="top" secondItem="1xv-Cs-zmJ" secondAttribute="top" id="hmF-Rj-6RT"/>
                             <constraint firstItem="EAC-Rp-1Bq" firstAttribute="centerX" secondItem="VYJ-xd-qHT" secondAttribute="centerX" id="kgH-Px-XVK"/>
                         </constraints>

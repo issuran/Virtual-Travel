@@ -11,7 +11,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
+class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -23,6 +23,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     var photosDB: [Photo] = []
     var annotation: MKAnnotation!
     var dataController: DataController!
+    let requester = Requester()
+    var page: Int = 0
     
     deinit {
         dataController = nil
@@ -30,6 +32,35 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         requestPhoto = true
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.allowsMultipleSelection = true
+        mapView.delegate = self
+        
+        performRequestPhotos()
+        
+        // Setup
+        setUpFlowLayout()
+        setUpMapViewPin()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setUpActionButton()
+    }
+    
+    @IBAction func requestOrDeletePhoto(_ sender: Any) {
+        if requestPhoto {
+        } else {
+            if itemsToDelete.count > 0 {
+                deletePhotos()
+            }
+        }
+    }
+    
+    // MARK: Private functions
     fileprivate func setUpFlowLayout() {
         let space: CGFloat = 3.0
         let dimension = (view.frame.size.width - (2 * space)) / space
@@ -68,41 +99,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func removeSelection(_ indexPath: IndexPath) {
+    fileprivate func removeSelection(_ indexPath: IndexPath) {
         let indexToDelete = itemsToDelete.index(of: indexPath.row)
         itemsToDelete.remove(at: indexToDelete ?? 0)
         
         setUpActionButton()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.allowsMultipleSelection = true
-        mapView.delegate = self
-        
-        // Setup
-        setUpFlowLayout()
-        setUpMapViewPin()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setUpActionButton()
-    }
-    
-    @IBAction func requestOrDeletePhoto(_ sender: Any) {
-        if requestPhoto {
-        } else {
-            if itemsToDelete.count > 0 {
-                deletePhotos()
-            }
-        }
-    }
+    // MARK: Database functions
     
     // MARK: Delete Pin from Data Base
-    func deletePhotos() {
+    fileprivate func deletePhotos() {
         for photo in photosDB {
             dataController.viewContext.delete(photo)
         }
@@ -111,7 +118,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     }
     
     // MARK: Persist changes to Data Base
-    func persistToDataBase() {
+    fileprivate func persistToDataBase() {
         do {
             try dataController.viewContext.save()
         } catch {
@@ -122,7 +129,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return Constants.NUMBER_OF_PHOTOS_TO_DISPLAY
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -145,5 +152,20 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         itemsToDelete.append(indexPath.row)
         setUpActionButton()
+    }
+}
+
+extension PhotoAlbumViewController {
+    func performRequestPhotos() {
+        requester.getPhotosFromFlickr(latitude: annotation.coordinate.latitude,
+                                      longitude: annotation.coordinate.longitude, 
+                                      page: page) { result in
+            switch result {
+            case .success(let flickrImages):
+                print("Sucesso")
+            case .failure(let message):
+                self.alert(message: message.localizedDescription)
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class TravelLocationsViewController: UIViewController {
+class TravelLocationsViewController: BaseViewController {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var deletePinsNotification: UIButton!
