@@ -131,6 +131,7 @@ extension TravelLocationsViewController: MKMapViewDelegate {
             let annotationView = sender as! MKAnnotationView
             if let annotation = annotationView.annotation {
                 photoViewController.annotation = annotation
+                photoViewController.dataController = dataController
             }
         }
     }

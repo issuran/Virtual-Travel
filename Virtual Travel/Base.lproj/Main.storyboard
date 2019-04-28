@@ -115,7 +115,7 @@
                                     <constraint firstAttribute="height" constant="50" id="WO7-uD-ecb"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
-                                <state key="normal" title="New Collection">
+                                <state key="normal" title="Request New Collection">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>

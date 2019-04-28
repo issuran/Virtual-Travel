@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     
@@ -19,7 +20,15 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     
     var requestPhoto: Bool = true
     var itemsToDelete: [Int] = []
+    var photosDB: [Photo] = []
     var annotation: MKAnnotation!
+    var dataController: DataController!
+    
+    deinit {
+        dataController = nil
+        itemsToDelete = []
+        requestPhoto = true
+    }
     
     fileprivate func setUpFlowLayout() {
         let space: CGFloat = 3.0
@@ -49,8 +58,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     }
     
     fileprivate func setUpActionButton() {
+        requestPhoto = itemsToDelete.count == 0 ? true : false
+        
         if requestPhoto {
-            requestOrDeletePhotoButton.setTitle("New Collection", for: .normal)
+            requestOrDeletePhotoButton.setTitle("Request New Collection", for: .normal)
+            requestOrDeletePhotoButton.isEnabled = photosDB.count > 0 ? true : false
         } else {
             requestOrDeletePhotoButton.setTitle("Remove Selected Pictures", for: .normal)
         }
@@ -59,6 +71,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     func removeSelection(_ indexPath: IndexPath) {
         let indexToDelete = itemsToDelete.index(of: indexPath.row)
         itemsToDelete.remove(at: indexToDelete ?? 0)
+        
+        setUpActionButton()
     }
     
     override func viewDidLoad() {
@@ -71,14 +85,37 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         // Setup
         setUpFlowLayout()
         setUpMapViewPin()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setUpActionButton()
     }
     
     @IBAction func requestOrDeletePhoto(_ sender: Any) {
         if requestPhoto {
-            // Request new collection
         } else {
-            // Delete selected photos
+            if itemsToDelete.count > 0 {
+                deletePhotos()
+            }
+        }
+    }
+    
+    // MARK: Delete Pin from Data Base
+    func deletePhotos() {
+        for photo in photosDB {
+            dataController.viewContext.delete(photo)
+        }
+        
+        persistToDataBase()
+    }
+    
+    // MARK: Persist changes to Data Base
+    func persistToDataBase() {
+        do {
+            try dataController.viewContext.save()
+        } catch {
+            print("Error on saving")
         }
     }
 }
@@ -107,5 +144,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         itemsToDelete.append(indexPath.row)
+        setUpActionButton()
     }
 }
