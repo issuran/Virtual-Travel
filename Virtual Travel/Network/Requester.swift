@@ -80,4 +80,18 @@ class Requester {
         }
         task.resume()
     }
+    
+    func downloadImage(_ photo: Photo, completion: @escaping Handler) {
+        
+        URLSession.shared.dataTask(with: URL(string: photo.imageURL!)!) { (data, response, error) in
+            if error == nil {
+                DispatchQueue.main.async {
+                    completion(.success(data!))
+                }
+            } else {
+                completion(.failure(error! as NSError))
+            }
+            
+        }.resume()
+    }
 }

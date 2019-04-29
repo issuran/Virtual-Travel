@@ -21,6 +21,9 @@ class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
     var requestPhoto: Bool = true
     var itemsToDelete: [Int] = []
     var photosDB: [Photo] = []
+    var flickrImages: [FlickrImage]!
+    var pin: Pin!
+    
     var annotation: MKAnnotation!
     var dataController: DataController!
     let requester = Requester()
@@ -39,11 +42,11 @@ class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
         collectionView.allowsMultipleSelection = true
         mapView.delegate = self
         
-        performRequestPhotos()
-        
         // Setup
         setUpFlowLayout()
         setUpMapViewPin()
+        
+        loadPhotosFromDB()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,10 +56,31 @@ class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
     
     @IBAction func requestOrDeletePhoto(_ sender: Any) {
         if requestPhoto {
+            // TODO: REQUEST MORE PHOTOS
+            performRequestPhotos()
         } else {
             if itemsToDelete.count > 0 {
                 deletePhotos()
             }
+        }
+    }
+    
+    fileprivate func loadPhotosFromDB() {
+        let fetchRequeste: NSFetchRequest<Photo> = Photo.fetchRequest()
+        fetchRequeste.sortDescriptors = []
+        fetchRequeste.predicate = NSPredicate(format: "pin == %@", pin)
+    
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequeste, managedObjectContext: dataController.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        do {
+            try fetchedResultsController.performFetch()
+            print("Photos loaded from core data")
+        } catch { }
+    
+        if fetchedResultsController.fetchedObjects!.count > 0 {
+            photosDB = fetchedResultsController.fetchedObjects!
+            collectionView.reloadData()
+        } else {
+            performRequestPhotos()
         }
     }
     
@@ -93,7 +117,7 @@ class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
         
         if requestPhoto {
             requestOrDeletePhotoButton.setTitle("Request New Collection", for: .normal)
-            requestOrDeletePhotoButton.isEnabled = photosDB.count > 0 ? true : false
+//            requestOrDeletePhotoButton.isEnabled = photosDB.count > 0 ? true : false
         } else {
             requestOrDeletePhotoButton.setTitle("Remove Selected Pictures", for: .normal)
         }
@@ -108,33 +132,89 @@ class PhotoAlbumViewController: BaseViewController, MKMapViewDelegate {
     
     // MARK: Database functions
     
-    // MARK: Delete Pin from Data Base
-    fileprivate func deletePhotos() {
-        for photo in photosDB {
-            dataController.viewContext.delete(photo)
+    // MARK: Add Photo to Data Base
+    func addPhotoToDB() {
+        
+        for flickrImage in flickrImages {
+            let photoDB = Photo(context: dataController.viewContext)
+            photoDB.imageURL = flickrImage.imageURL()
+            photoDB.index = flickrImage.id
+            photoDB.pin = pin
+            persistToDataBase {
+                self.photosDB.append(photoDB)
+            }
         }
+        
+        collectionView.reloadData()
+    }
+    
+    // MARK: Delete Photo from Data Base
+    fileprivate func deletePhotos() {
+        for item in itemsToDelete {
+            if item <= photosDB.count {
+                let itemToDelete = photosDB.remove(at: item)
+                dataController.viewContext.delete(itemToDelete)
+            } else {
+                let itemToDelete = photosDB.remove(at: item - 1)
+                dataController.viewContext.delete(itemToDelete)
+            }
+        }
+        
+        persistToDataBase {
+            self.collectionView.reloadData()
+        }
+        itemsToDelete.removeAll()
+        setUpActionButton()
+    }
+    
+    fileprivate func clearDataBasePhotos() {
+        for photo in photosDB {
+            deleteFromDatabase(photo)
+        }
+        photosDB.removeAll()
+    }
+    
+    func deleteFromDatabase(_ photo: Photo) {
+        dataController.viewContext.delete(photo)
         
         persistToDataBase()
     }
     
     // MARK: Persist changes to Data Base
-    fileprivate func persistToDataBase() {
+    fileprivate func persistToDataBase(completion: (() -> Void)? = nil) {
         do {
             try dataController.viewContext.save()
+            completion?()
         } catch {
             print("Error on saving")
         }
     }
 }
 
+// MARK: Collection View Extension
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return Constants.NUMBER_OF_PHOTOS_TO_DISPLAY
+        return photosDB.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCollectionViewCell
-        cell.imageView.image = #imageLiteral(resourceName: "udaLogo")
+        
+        if photosDB[indexPath.row].imageURL != nil {
+            requester.downloadImage(photosDB[indexPath.row]) { result in
+                switch result {
+                    
+                case .success(let image):
+                    cell.imageView.image = UIImage(data: image as! Data)
+                case .failure(let message):
+                    self.alert(message: message.localizedDescription)
+                }
+                
+            }
+        } else {
+            cell.imageView.image = #imageLiteral(resourceName: "udaLogo")
+        }
+        
         return cell
     }
     
@@ -155,6 +235,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     }
 }
 
+// MARK: Network extension
 extension PhotoAlbumViewController {
     func performRequestPhotos() {
         requester.getPhotosFromFlickr(latitude: annotation.coordinate.latitude,
@@ -162,7 +243,11 @@ extension PhotoAlbumViewController {
                                       page: page) { result in
             switch result {
             case .success(let flickrImages):
-                print("Sucesso")
+                self.clearDataBasePhotos()
+                self.setUpActionButton()
+                self.page += 1
+                self.flickrImages = flickrImages as? [FlickrImage]
+                self.addPhotoToDB()
             case .failure(let message):
                 self.alert(message: message.localizedDescription)
             }

@@ -18,6 +18,7 @@ class TravelLocationsViewController: BaseViewController {
     var shouldDeletePins = false
     
     var pinsDB: [Pin] = []
+    var pin: Pin!
     
     var dataController: DataController!
     
@@ -132,12 +133,21 @@ extension TravelLocationsViewController: MKMapViewDelegate {
             if let annotation = annotationView.annotation {
                 photoViewController.annotation = annotation
                 photoViewController.dataController = dataController
+                photoViewController.pin = pin
             }
         }
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if !shouldDeletePins {
+            if let annotation = view.annotation {
+                for pin in pinsDB {
+                    if pin.latitude == annotation.coordinate.latitude && pin.longitude == annotation.coordinate.longitude {
+                        self.pin = pin
+                        break
+                    }
+                }
+            }
             performSegue(withIdentifier: "photoSegue", sender: view)
         } else {
             if let annotation = view.annotation {
